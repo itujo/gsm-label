@@ -1,47 +1,46 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended"
-    // Uncomment the following lines to enable eslint-config-prettier
-    // Is not enabled right now to avoid issues with the Next.js repo
-    // "prettier",
-  ],
   "env": {
-    "es6": true,
-    "browser": true,
-    "jest": true,
+    "es2021": true,
     "node": true
   },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
+  "extends": [
+    "airbnb-base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
   },
+  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "react/react-in-jsx-scope": 0,
-    "react/display-name": 0,
-    "react/prop-types": 0,
-    "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/explicit-member-accessibility": 0,
-    "@typescript-eslint/indent": 0,
-    "@typescript-eslint/member-delimiter-style": 0,
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/no-var-requires": 0,
-    "@typescript-eslint/no-use-before-define": 0,
-    "@typescript-eslint/no-unused-vars": [
-      2,
+    "max-classes-per-file": ["off"],
+    "class-methods-use-this": ["off"],
+    "prettier/prettier": [
+      "error",
+      {},
       {
-        "argsIgnorePattern": "^_"
+        "usePrettierrc": true
       }
     ],
-    "no-console": [
-      2,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
       {
-        "allow": ["warn", "error"]
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
       }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {},
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }
