@@ -5530,7 +5530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^7.0.0":
+"husky@npm:^7.0.1":
   version: 7.0.1
   resolution: "husky@npm:7.0.1"
   bin:
@@ -7285,11 +7285,11 @@ __metadata:
     eslint-plugin-react: ^7.24.0
     eslint-plugin-react-hooks: ^4.2.0
     framer-motion: ^4.1.17
-    husky: ^7.0.0
+    husky: ^7.0.1
     jest: ^27.0.6
     jest-watch-typeahead: ^0.6.4
     next: ^11.0.1
-    pinst: ^2.0.0
+    pinst: ^2.1.6
     prettier: ^2.3.2
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -7895,7 +7895,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinst@npm:^2.0.0":
+"pinst@npm:^2.1.6":
   version: 2.1.6
   resolution: "pinst@npm:2.1.6"
   dependencies:
