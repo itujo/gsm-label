@@ -8,6 +8,7 @@ import {
   ButtonGroup,
   Alert,
   AlertIcon,
+  HStack,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
@@ -127,19 +128,27 @@ const Entel = (): JSX.Element => {
             </Select>
 
             <Formik
-              initialValues={{ iccidOrImsi: '' }}
+              initialValues={{
+                iccidOrImsi: '',
+                horizontalAlign: 0,
+                verticalAlign: 0,
+              }}
               innerRef={
                 formikRef as
-                  | Ref<FormikProps<{ iccidOrImsi: string }>>
+                  | Ref<
+                      FormikProps<{
+                        iccidOrImsi: string;
+                        horizontalAlign: number;
+                        verticalAlign: number;
+                      }>
+                    >
                   | undefined
               }
               onSubmit={async (values, { setErrors }) => {
-                const { iccidOrImsi } = values;
-
                 setSubmitting(true);
 
                 api
-                  .post('/v1/label/generate', { iccidOrImsi })
+                  .post('/v1/label/generate', { ...values })
                   .then(async (res) => {
                     setZpl(res.data);
 
@@ -169,6 +178,25 @@ const Entel = (): JSX.Element => {
                     width={400}
                     required
                   />
+                  <HStack mt={2}>
+                    <InputField
+                      type="number"
+                      name="horizontalAlign"
+                      placeholder="pos x (horizontal)"
+                      label="pos x (horizontal)"
+                      width={200}
+                      required
+                    />
+                    <InputField
+                      type="number"
+                      name="verticalAlign"
+                      placeholder="pos y (vertical)"
+                      label="pos y (vertical)"
+                      width={200}
+                      required
+                    />
+                  </HStack>
+
                   <ButtonGroup mt={4} spacing={60}>
                     <Button isLoading={isSubmitting} type="submit">
                       enviar
