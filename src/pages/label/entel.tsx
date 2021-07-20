@@ -1,9 +1,18 @@
 /* eslint-disable no-console */
-import { Box, Button, Heading, Center, Select } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Heading,
+  Center,
+  Select,
+  ButtonGroup,
+  Alert,
+  AlertIcon,
+} from '@chakra-ui/react';
 import axios from 'axios';
-import { Form, Formik } from 'formik';
+import { Form, Formik, FormikProps } from 'formik';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { Ref, useEffect, useRef, useState } from 'react';
 import socketClient, { Socket } from 'socket.io-client';
 import InputField from '../../components/InputField';
 import Wrapper from '../../components/Wrapper';
@@ -13,9 +22,14 @@ import mmToInches from '../../utils/mmToInches';
 const Entel = (): JSX.Element => {
   const [isSubmitting, setSubmitting] = useState(false);
   const [printerNames, setPrinterNames] = useState(['']);
-  const [selectedPrinter, setSelectedPrinter] = useState<string | null>(null);
+  const [selectedPrinter, setSelectedPrinter] = useState<string | undefined>(
+    undefined
+  );
   const [io, setIo] = useState<Socket | null>(null);
   const [zpl, setZpl] = useState('');
+  const [printSuccess, setPrintSuccess] = useState(false);
+  const [printerError, setPrinterError] = useState(false);
+  const formikRef = useRef<{ resetForm(): void }>();
 
   useEffect(() => {
     const socket = socketClient('http://localhost:7837');
@@ -32,6 +46,7 @@ const Entel = (): JSX.Element => {
   }, []);
 
   const handleLabelary = async (zplString: string) => {
+    setPrintSuccess(false);
     const { data } = await axios.get(
       `https://api.labelary.com/v1/printers/8dpmm/labels/${mmToInches(
         50
@@ -45,12 +60,14 @@ const Entel = (): JSX.Element => {
   };
 
   const handlePrint = async () => {
-    if (!selectedPrinter || !zpl) return; // TODO: handle validation
+    if (!selectedPrinter || !zpl) {
+      setPrinterError(true);
+    } // TODO: handle validation
 
     io?.emit('zplToPrint', selectedPrinter, zpl);
 
     io?.on('printSuccess', () => {
-      console.log('success');
+      setPrintSuccess(true);
     });
 
     io?.on('printError', () => {
@@ -58,8 +75,25 @@ const Entel = (): JSX.Element => {
     });
   };
 
+  const clearForm = () => {
+    formikRef.current?.resetForm();
+    const zplField = document.getElementById('printArea') as HTMLImageElement;
+    zplField.hidden = true;
+    setPrintSuccess(false);
+  };
+
   return (
     <div>
+      <Alert status="success" hidden={!printSuccess}>
+        <AlertIcon />
+        impressao bem sucedida
+      </Alert>
+
+      <Alert status="error" hidden={!printerError}>
+        <AlertIcon />
+        certifique-se de selecionar uma impressora
+      </Alert>
+
       <Wrapper variant="small">
         <Head>
           <title>entel - remake</title>
@@ -76,8 +110,15 @@ const Entel = (): JSX.Element => {
             borderRadius={8}
             boxShadow="lg"
           >
-            <Select mb={2} onChange={(e) => setSelectedPrinter(e.target.value)}>
-              <option value="null">Selecione uma impressora</option>
+            <Select
+              mb={2}
+              required
+              onChange={(e) => {
+                setPrinterError(false);
+                setSelectedPrinter(e.target.value);
+              }}
+              placeholder="selecione uma impressora"
+            >
               {printerNames.map((printer) => (
                 <option value={printer} key={printer}>
                   {printer}
@@ -87,8 +128,14 @@ const Entel = (): JSX.Element => {
 
             <Formik
               initialValues={{ iccidOrImsi: '' }}
-              onSubmit={async (values, { setErrors, resetForm }) => {
+              innerRef={
+                formikRef as
+                  | Ref<FormikProps<{ iccidOrImsi: string }>>
+                  | undefined
+              }
+              onSubmit={async (values, { setErrors }) => {
                 const { iccidOrImsi } = values;
+
                 setSubmitting(true);
 
                 api
@@ -105,8 +152,8 @@ const Entel = (): JSX.Element => {
                       if (error.response.status === 404) {
                         setErrors({ iccidOrImsi: 'not found' });
                         setTimeout(() => {
-                          resetForm();
                           setSubmitting(false);
+                          clearForm();
                         }, 1000);
                       }
                     }
@@ -120,11 +167,14 @@ const Entel = (): JSX.Element => {
                     placeholder="iccid ou imsi"
                     label="iccid ou imsi"
                     width={400}
+                    required
                   />
-
-                  <Button mt={4} isLoading={isSubmitting} type="submit">
-                    enviar
-                  </Button>
+                  <ButtonGroup mt={4} spacing={60}>
+                    <Button isLoading={isSubmitting} type="submit">
+                      enviar
+                    </Button>
+                    <Button onClick={clearForm}>limpar</Button>
+                  </ButtonGroup>
                 </Form>
               )}
             </Formik>
