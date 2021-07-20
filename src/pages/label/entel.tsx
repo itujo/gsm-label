@@ -18,7 +18,7 @@ const Entel = (): JSX.Element => {
   const [zpl, setZpl] = useState('');
 
   useEffect(() => {
-    const socket = socketClient('localhost:7837');
+    const socket = socketClient('http://localhost:7837');
     socket.on('connection', () => {
       console.log(`I'm connected with the back-end`);
     });
