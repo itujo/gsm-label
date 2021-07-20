@@ -1,5 +1,7 @@
 import { Center, Heading } from '@chakra-ui/react';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import withAuth from '../utils/withAuth';
 
 export const Index = (): JSX.Element => (
   <>
@@ -13,3 +15,6 @@ export const Index = (): JSX.Element => (
 );
 
 export default Index;
+export const getServerSideProps: GetServerSideProps = withAuth(async () => ({
+  props: {},
+}));
