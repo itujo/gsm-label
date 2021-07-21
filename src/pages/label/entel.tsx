@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { Ref, useEffect, useRef, useState } from 'react';
@@ -20,6 +21,7 @@ import InputField from '../../components/InputField';
 import Wrapper from '../../components/Wrapper';
 import api from '../../services/api';
 import mmToInches from '../../utils/mmToInches';
+import withAuth from '../../utils/withAuth';
 
 const Entel = (): JSX.Element => {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -267,3 +269,6 @@ const Entel = (): JSX.Element => {
 };
 
 export default Entel;
+export const getServerSideProps: GetServerSideProps = withAuth(async () => ({
+  props: {},
+}));

@@ -36,7 +36,28 @@ interface NavItem {
   href?: string;
 }
 
-const NAV_ITEMS: Array<NavItem> = [
+let accessLevel = 0;
+
+let NAV_ITEMS: Array<NavItem> = [
+  {
+    label: '',
+  },
+];
+
+const REMAKE_ITEMS: Array<NavItem> = [
+  {
+    label: 'remake',
+    children: [
+      {
+        label: 'entel',
+        subLabel: 'remake etiqueta entel',
+        href: '/label/entel',
+      },
+    ],
+  },
+];
+
+const IMP_ITEMS: Array<NavItem> = [
   {
     label: 'usuarios',
     children: [
@@ -59,6 +80,49 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: 'importacao',
+    children: [
+      {
+        label: 'lote',
+        subLabel: 'importar lote',
+        href: '/upload/batch',
+      },
+    ],
+  },
+];
+
+const ADMIN_ITEMS: Array<NavItem> = [
+  {
+    label: 'usuarios',
+    children: [
+      {
+        label: 'cadastrar',
+        subLabel: 'cadastrar novo usuario',
+        href: '/register',
+      },
+    ],
+  },
+  {
+    label: 'remake',
+    children: [
+      {
+        label: 'entel',
+        subLabel: 'remake etiqueta entel',
+        href: '/label/entel',
+      },
+    ],
+  },
+  {
+    label: 'importacao',
+    children: [
+      {
+        label: 'lote',
+        subLabel: 'importar lote',
+        href: '/upload/batch',
+      },
+    ],
+  },
+  {
+    label: 'admin',
     children: [
       {
         label: 'lote',
@@ -220,6 +284,7 @@ const MobileNav = () => (
 interface UserData {
   name: string;
   username: string;
+  accessLevel: number;
 }
 
 export default function NavBar(): JSX.Element {
@@ -244,6 +309,15 @@ export default function NavBar(): JSX.Element {
       })
       .then((res) => {
         setUserData(res.data.user);
+        accessLevel = res.data.user.accessLevel;
+
+        if (accessLevel > 5) {
+          NAV_ITEMS = ADMIN_ITEMS;
+        } else if (accessLevel > 3) {
+          NAV_ITEMS = IMP_ITEMS;
+        } else {
+          NAV_ITEMS = REMAKE_ITEMS;
+        }
       })
       .catch((error) => {
         // eslint-disable-next-line no-console

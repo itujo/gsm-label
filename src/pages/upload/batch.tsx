@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 import { Button, Center, Box, Heading } from '@chakra-ui/react';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { useState } from 'react';
 import Wrapper from '../../components/Wrapper';
 import api from '../../services/api';
+import withAuth from '../../utils/withAuth';
 
 export const Batch = (): JSX.Element => {
   const [pFiles, setpFiles] = useState<FileList>();
@@ -97,3 +99,6 @@ export const Batch = (): JSX.Element => {
 };
 
 export default Batch;
+export const getServerSideProps: GetServerSideProps = withAuth(async () => ({
+  props: {},
+}));
