@@ -34,6 +34,10 @@ const Entel = (): JSX.Element => {
   const [iccidId, setIccidId] = useState<number | null>(null);
   const formikRef = useRef<{ resetForm(): void }>();
 
+  const [verticalAlign, setVerticalAlign] = useState('');
+  const [horizontalAlign, setHorizontalAlign] = useState('');
+  const [darkness, setDarkness] = useState('');
+
   useEffect(() => {
     const socket = socketClient('http://localhost:7837');
     socket.on('connection', () => {
@@ -146,18 +150,18 @@ const Entel = (): JSX.Element => {
             <Formik
               initialValues={{
                 iccidOrImsi: '',
-                horizontalAlign: 0,
-                verticalAlign: 0,
-                darkness: 0,
+                horizontalAlign,
+                verticalAlign,
+                darkness,
               }}
               innerRef={
                 formikRef as
                   | Ref<
                       FormikProps<{
                         iccidOrImsi: string;
-                        horizontalAlign: number;
-                        verticalAlign: number;
-                        darkness: number;
+                        horizontalAlign: string;
+                        verticalAlign: string;
+                        darkness: string;
                       }>
                     >
                   | undefined
@@ -165,8 +169,20 @@ const Entel = (): JSX.Element => {
               onSubmit={async (values, { setErrors }) => {
                 setSubmitting(true);
 
+                console.log({
+                  ...values,
+                  horizontalAlign,
+                  verticalAlign,
+                  darkness,
+                });
+
                 api
-                  .post('/v1/label/generate', { ...values })
+                  .post('/v1/label/generate', {
+                    ...values,
+                    horizontalAlign,
+                    verticalAlign,
+                    darkness,
+                  })
                   .then(async (res) => {
                     setIccidId(res.data.iccid.id);
 
@@ -205,6 +221,8 @@ const Entel = (): JSX.Element => {
                       placeholder="pos x (horizontal)"
                       label="pos x (horiz)"
                       required
+                      value={horizontalAlign}
+                      onChange={(e) => setHorizontalAlign(e.target.value)}
                     />
                     <InputField
                       type="number"
@@ -212,6 +230,8 @@ const Entel = (): JSX.Element => {
                       placeholder="pos y (vertical)"
                       label="pos y (vertical)"
                       required
+                      value={verticalAlign}
+                      onChange={(e) => setVerticalAlign(e.target.value)}
                     />
                     <InputField
                       type="number"
@@ -221,6 +241,8 @@ const Entel = (): JSX.Element => {
                       placeholder="temperatura"
                       label="temperatura"
                       required
+                      value={darkness}
+                      onChange={(e) => setDarkness(e.target.value)}
                     />
                   </HStack>
 
