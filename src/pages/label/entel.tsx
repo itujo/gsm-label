@@ -148,6 +148,7 @@ const Entel = (): JSX.Element => {
                 iccidOrImsi: '',
                 horizontalAlign: 0,
                 verticalAlign: 0,
+                darkness: 0,
               }}
               innerRef={
                 formikRef as
@@ -156,6 +157,7 @@ const Entel = (): JSX.Element => {
                         iccidOrImsi: string;
                         horizontalAlign: number;
                         verticalAlign: number;
+                        darkness: number;
                       }>
                     >
                   | undefined
@@ -201,8 +203,7 @@ const Entel = (): JSX.Element => {
                       type="number"
                       name="horizontalAlign"
                       placeholder="pos x (horizontal)"
-                      label="pos x (horizontal)"
-                      width={200}
+                      label="pos x (horiz)"
                       required
                     />
                     <InputField
@@ -210,14 +211,22 @@ const Entel = (): JSX.Element => {
                       name="verticalAlign"
                       placeholder="pos y (vertical)"
                       label="pos y (vertical)"
-                      width={200}
+                      required
+                    />
+                    <InputField
+                      type="number"
+                      name="darkness"
+                      min="-30"
+                      max="30"
+                      placeholder="temperatura"
+                      label="temperatura"
                       required
                     />
                   </HStack>
 
                   <ButtonGroup mt={4} spacing={60}>
                     <Button isLoading={isSubmitting} type="submit">
-                      enviar
+                      gerar
                     </Button>
                     <Button onClick={clearForm}>limpar</Button>
                   </ButtonGroup>
@@ -236,7 +245,7 @@ const Entel = (): JSX.Element => {
             className="printArea"
           />
         </Box>
-        <Button onClick={handlePrint}>print</Button>
+        <Button onClick={handlePrint}>imprimir</Button>
       </Wrapper>
     </div>
   );
