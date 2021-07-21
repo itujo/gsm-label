@@ -13,6 +13,7 @@ import {
 import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
 import Head from 'next/head';
+import { parseCookies } from 'nookies';
 import { Ref, useEffect, useRef, useState } from 'react';
 import socketClient, { Socket } from 'socket.io-client';
 import InputField from '../../components/InputField';
@@ -30,6 +31,7 @@ const Entel = (): JSX.Element => {
   const [zpl, setZpl] = useState('');
   const [printSuccess, setPrintSuccess] = useState(false);
   const [printerError, setPrinterError] = useState(false);
+  const [iccidId, setIccidId] = useState<number | null>(null);
   const formikRef = useRef<{ resetForm(): void }>();
 
   useEffect(() => {
@@ -61,13 +63,27 @@ const Entel = (): JSX.Element => {
   };
 
   const handlePrint = async () => {
-    if (!selectedPrinter || !zpl) {
+    if (!selectedPrinter || !zpl || !iccidId) {
       setPrinterError(true);
     } // TODO: handle validation
 
-    io?.emit('zplToPrint', selectedPrinter, zpl);
+    io?.emit('zplToPrint', selectedPrinter, zpl, iccidId);
 
-    io?.on('printSuccess', () => {
+    io?.on('printSuccess', async () => {
+      const { token } = parseCookies();
+
+      await api.patch(
+        '/v1/iccid/update',
+        {
+          iccid: { id: iccidId },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setPrintSuccess(true);
     });
 
@@ -150,9 +166,13 @@ const Entel = (): JSX.Element => {
                 api
                   .post('/v1/label/generate', { ...values })
                   .then(async (res) => {
-                    setZpl(res.data);
+                    console.log(res.data);
 
-                    await handleLabelary(res.data);
+                    setIccidId(res.data.iccid.id);
+
+                    setZpl(res.data.zpl);
+
+                    await handleLabelary(res.data.rawZpl);
 
                     setSubmitting(false);
                   })
