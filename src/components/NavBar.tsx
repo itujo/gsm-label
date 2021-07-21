@@ -323,7 +323,7 @@ export default function NavBar(): JSX.Element {
         // eslint-disable-next-line no-console
         console.log(error.response);
       });
-  }, []);
+  }, [accessLevel]);
 
   return (
     <Box>
