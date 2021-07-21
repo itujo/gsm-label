@@ -169,13 +169,6 @@ const Entel = (): JSX.Element => {
               onSubmit={async (values, { setErrors }) => {
                 setSubmitting(true);
 
-                console.log({
-                  ...values,
-                  horizontalAlign,
-                  verticalAlign,
-                  darkness,
-                });
-
                 api
                   .post('/v1/label/generate', {
                     ...values,
