@@ -166,8 +166,6 @@ const Entel = (): JSX.Element => {
                 api
                   .post('/v1/label/generate', { ...values })
                   .then(async (res) => {
-                    console.log(res.data);
-
                     setIccidId(res.data.iccid.id);
 
                     setZpl(res.data.zpl);
