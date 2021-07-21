@@ -289,6 +289,7 @@ interface UserData {
 
 export default function NavBar(): JSX.Element {
   const [userData, setUserData] = useState<UserData>();
+  const [loading, setLoading] = useState(true);
 
   const { isOpen, onToggle } = useDisclosure();
   const router = useRouter();
@@ -318,12 +319,13 @@ export default function NavBar(): JSX.Element {
         } else {
           NAV_ITEMS = REMAKE_ITEMS;
         }
+        setLoading(false);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
         console.log(error.response);
       });
-  }, [accessLevel]);
+  }, [loading]);
 
   return (
     <Box>
@@ -373,7 +375,7 @@ export default function NavBar(): JSX.Element {
           spacing={6}
         >
           <Button as="a" fontSize="sm" fontWeight={400} variant="link" href="#">
-            {userData?.name}
+            user: {userData?.name}
           </Button>
           <Button
             fontSize="sm"
