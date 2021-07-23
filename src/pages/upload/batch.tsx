@@ -1,5 +1,12 @@
 /* eslint-disable no-console */
-import { Button, Center, Box, Heading } from '@chakra-ui/react';
+import {
+  Button,
+  Center,
+  Box,
+  Heading,
+  Alert,
+  AlertIcon,
+} from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
@@ -11,6 +18,8 @@ import withAuth from '../../utils/withAuth';
 export const Batch = (): JSX.Element => {
   const [pFiles, setpFiles] = useState<FileList>();
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [progressValue, setProgressValue] = useState(0);
 
   const handleFileUpload = async (e: {
@@ -27,6 +36,8 @@ export const Batch = (): JSX.Element => {
   const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     setIsSubmiting(true);
+    setSubmitError(false);
+    setSubmitSuccess(false);
 
     const formData = new FormData();
     const files = pFiles as FileList;
@@ -52,10 +63,12 @@ export const Batch = (): JSX.Element => {
       .then((res) => {
         console.log(res.data);
         setIsSubmiting(false);
+        setSubmitSuccess(true);
       })
       .catch((err) => {
         console.log(err.response.data);
         setIsSubmiting(false);
+        setSubmitSuccess(false);
       });
   };
   return isSubmiting ? (
@@ -70,31 +83,42 @@ export const Batch = (): JSX.Element => {
       </Center>
     </>
   ) : (
-    <Wrapper variant="regular">
-      <Head>
-        <title key="pageTitle">lote</title>
-      </Head>
+    <>
+      <Alert status="success" hidden={!submitSuccess}>
+        <AlertIcon />
+        lote importado com sucesso
+      </Alert>
 
-      <Center h="50vh">
-        <Box>
-          <Heading>selecione um ou mais arquivos</Heading>
-          <Box mt={8}>
-            <form onSubmit={handleSubmit}>
-              <input
-                onChange={handleFileUpload}
-                type="file"
-                multiple
-                name="label"
-                id="label"
-              />
-              <Box mt={4}>
-                <Button type="submit">importar</Button>
-              </Box>
-            </form>
+      <Alert status="error" hidden={!submitError}>
+        <AlertIcon />
+        erro ao importar lote
+      </Alert>
+      <Wrapper variant="regular">
+        <Head>
+          <title key="pageTitle">lote</title>
+        </Head>
+
+        <Center h="50vh">
+          <Box>
+            <Heading>selecione um ou mais arquivos</Heading>
+            <Box mt={8}>
+              <form onSubmit={handleSubmit}>
+                <input
+                  onChange={handleFileUpload}
+                  type="file"
+                  multiple
+                  name="label"
+                  id="label"
+                />
+                <Box mt={4}>
+                  <Button type="submit">importar</Button>
+                </Box>
+              </form>
+            </Box>
           </Box>
-        </Box>
-      </Center>
-    </Wrapper>
+        </Center>
+      </Wrapper>
+    </>
   );
 };
 
